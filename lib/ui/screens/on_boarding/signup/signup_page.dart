@@ -70,6 +70,15 @@ class SignUpPage extends StatelessWidget {
               ),
               SizedBox(height: 11),
               TextFormField(
+                validator: (value){
+                  if (value == null || value.isEmpty) {
+                    return "Please Enter your Name";
+                  }
+                  if(value!.length < 10){
+                    return "Please enter a valid number";
+                  }
+                  return null;
+                },
                 controller: mobileController,
                 decoration: myDecor(
                   hint: "Enter your Mobile No",
