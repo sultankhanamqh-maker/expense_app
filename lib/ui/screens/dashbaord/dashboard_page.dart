@@ -4,9 +4,13 @@ import 'package:expense1/ui/screens/dashbaord/nav_pages/nav_noti_page.dart';
 import 'package:expense1/ui/screens/dashbaord/nav_pages/nav_profile_page.dart';
 import 'package:expense1/ui/screens/dashbaord/nav_pages/nav_stats_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../domain/constants/app_constants.dart';
+import '../add_expense_page/expense_bloc/expense_bloc.dart';
+import '../add_expense_page/expense_bloc/expense_bloc_event.dart';
+import '../add_expense_page/expense_bloc/expense_bloc_state.dart';
 
 class DashBoardPage extends StatefulWidget {
   const DashBoardPage({super.key});
@@ -16,6 +20,9 @@ class DashBoardPage extends StatefulWidget {
 }
 
 class _DashBoardPageState extends State<DashBoardPage> {
+
+
+  num currentBal = 0;
   int selectedIndex = 0;
   List<Widget> mPages = [
     NavHomePage(),
@@ -24,6 +31,12 @@ class _DashBoardPageState extends State<DashBoardPage> {
     NavNotificationPage(),
     NavProfilePage(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ExpenseBloc>().add(FetchInitialExpenseEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +72,12 @@ class _DashBoardPageState extends State<DashBoardPage> {
         ),
       ),
       body: mPages[selectedIndex],
-      bottomNavigationBar:  BottomNavigationBar(
+      bottomNavigationBar:  BlocListener<ExpenseBloc,ExpenseBlocState>(
+        listener: (_,state) {
+          if(state is ExpenseLoadedState){
+            currentBal = state.mainBalance;
+          }
+        },child:BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.pink.shade200,
         showSelectedLabels: false,
@@ -69,7 +87,7 @@ class _DashBoardPageState extends State<DashBoardPage> {
 
         onTap: (index){
           if(index==2){
-            Navigator.pushNamed(context, AppRoutes.addExpensePage);
+            Navigator.pushNamed(context, AppRoutes.addExpensePage,arguments: currentBal);
           }
           selectedIndex = index;
           setState(() {
@@ -83,14 +101,15 @@ class _DashBoardPageState extends State<DashBoardPage> {
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              color: Colors.pink.shade200,
-              borderRadius: BorderRadius.circular(10)
+                color: Colors.pink.shade200,
+                borderRadius: BorderRadius.circular(10)
             ),
             child: Icon(Icons.add,color: Colors.white,),
           ),label: "Add"),
           BottomNavigationBarItem(icon: Icon(Icons.notifications_none),label: "Notification"),
           BottomNavigationBarItem(icon: Icon(Icons.person_2_outlined),label: "Profile"),
         ],
+      ),
       ),
     );
   }

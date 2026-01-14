@@ -12,4 +12,3 @@ class FetchInitialExpenseEvent extends ExpenseBlocEvent{
   int flag;
   FetchInitialExpenseEvent({this.flag = 1});
 }
-class CurrBalanceEvent extends ExpenseBlocEvent{}

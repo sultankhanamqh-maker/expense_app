@@ -43,6 +43,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
   DateFormat df = DateFormat();
 
+  num prevBal = 0;
+
   /// to check wheather clicked or not
   bool isClicked = false;
 
@@ -57,6 +59,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
   @override
   Widget build(BuildContext context) {
+     prevBal = ModalRoute.of(context)!.settings.arguments as num;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -238,44 +241,48 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     Navigator.pop(context);
                   }
                 },
-                child: ElevatedBtn(
-                  title: "Add Expense",
-                  onTap: () async{
-
-                    double amt = double.parse(amtController.text);
-                    double prevBal = await dbHelper.currBalance();
-
-                    double balance = selectedType == "Debit" ? prevBal - amt : prevBal + amt;
-
-                    if (mKey.currentState!.validate()){
-                      isExpenseBuildCalled = true;
-                      if (isClicked){
-                        context.read<ExpenseBloc>().add(
-                          AddExpenseEvent(
-                            mExpense: ExpenseModel(
-                              title: titleController.text,
-                              desc: descController.text,
-                              amt: double.parse(amtController.text),
-                              bal: balance,
-                              expType: selectedType == "Debit" ? 1 : 2,
-                              catId: AppConstant.allCat[selectedIndex].id,
-                              createdAt: (selectedDateTime ?? DateTime.now())
-                                  .millisecondsSinceEpoch,
-                            ),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Please Select Category"),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
+                  child: ElevatedBtn(
+                    title: "Add Expense",
+                    onTap: () async{
+                       num updateBal = 0;
+                      double amt = double.parse(amtController.text);
+                      if(selectedType == "Debit"){
+                        updateBal = prevBal - amt;
                       }
-                    }
-                  },
-                  bgColor: Colors.pink.shade200,
-                ),
+                      else {
+                        updateBal = prevBal + amt;
+                      }
+
+
+                      if (mKey.currentState!.validate()){
+                        isExpenseBuildCalled = true;
+                        if (isClicked){
+                          context.read<ExpenseBloc>().add(
+                            AddExpenseEvent(
+                              mExpense: ExpenseModel(
+                                title: titleController.text,
+                                desc: descController.text,
+                                amt: double.parse(amtController.text),
+                                bal: updateBal,
+                                expType: selectedType == "Debit" ? 1 : 2,
+                                catId: AppConstant.allCat[selectedIndex].id,
+                                createdAt: (selectedDateTime ?? DateTime.now())
+                                    .millisecondsSinceEpoch,
+                              ),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Please Select Category"),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    bgColor: Colors.pink.shade200,
+                  ),
               ),
             ],
           ),

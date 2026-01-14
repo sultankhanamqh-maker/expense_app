@@ -1,12 +1,14 @@
 import 'package:expense1/data/model/filterExpenseModel.dart';
 
-abstract class ExpenseBlocState {}
+abstract class ExpenseBlocState {
+}
 
 class ExpenseInitialState extends ExpenseBlocState{}
 class ExpenseLoadingState extends ExpenseBlocState{}
 class ExpenseLoadedState extends ExpenseBlocState{
   List<FilteredExpenseModel> allExp;
-  ExpenseLoadedState({required this.allExp ,});
+  num mainBalance;
+  ExpenseLoadedState({required this.allExp ,required this.mainBalance});
 }
 
 class ExpenseErrorState extends ExpenseBlocState{
@@ -14,7 +16,3 @@ class ExpenseErrorState extends ExpenseBlocState{
   ExpenseErrorState({required this.errorMsg});
 }
 
-class ExpenseBalanceLoadedState extends ExpenseBlocState{
-  double bal;
-  ExpenseBalanceLoadedState({required this.bal});
-}

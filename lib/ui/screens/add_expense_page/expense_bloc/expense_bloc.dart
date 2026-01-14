@@ -31,7 +31,7 @@ class ExpenseBloc extends Bloc<ExpenseBlocEvent, ExpenseBlocState> {
       if (isAdded) {
         var allExp = await dbHelper.getExpenses();
         emit(
-          ExpenseLoadedState(allExp: filteredExpense(allExp: allExp, flag: 1)),
+          ExpenseLoadedState(allExp: filteredExpense(allExp: allExp, flag: 1),mainBalance: allExp.last.bal),
         );
       } else {
         emit(ExpenseErrorState(errorMsg: "Something Went Wrong"));
@@ -45,18 +45,9 @@ class ExpenseBloc extends Bloc<ExpenseBlocEvent, ExpenseBlocState> {
 
       emit(
         ExpenseLoadedState(
-          allExp: filteredExpense(allExp: allExp, flag: event.flag),
+          allExp: filteredExpense(allExp: allExp, flag: event.flag),mainBalance: allExp.last.bal,
         ),
       );
-    });
-
-    on<CurrBalanceEvent>((event, emit) async {
-      emit(ExpenseLoadingState());
-      double currBal = await dbHelper.currBalance();
-      if (currBal < 0) {
-        emit(ExpenseErrorState(errorMsg: "You don't have that much Money!"));
-      }
-      emit(ExpenseBalanceLoadedState(bal: currBal));
     });
   }
 

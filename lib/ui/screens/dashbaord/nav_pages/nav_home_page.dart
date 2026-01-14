@@ -92,6 +92,7 @@ class _NavHomePageState extends State<NavHomePage> {
                 },
 
               ),
+
               BlocBuilder<ExpenseBloc, ExpenseBlocState>(
                 builder: (context, state) {
                   if (state is ExpenseLoadingState) {
@@ -126,7 +127,7 @@ class _NavHomePageState extends State<NavHomePage> {
                               ),
                               SizedBox(height: 7),
                               Text(
-                                "",//${state.allExp[i].balance}
+                                "${state.mainBalance}",
                                 style: TextStyle(
                                   fontSize: 35,
                                   color: Colors.white,
@@ -164,8 +165,8 @@ class _NavHomePageState extends State<NavHomePage> {
                             ],
                           ),
                         ),
-                         SizedBox(height: 11,),
-                         ListView.builder(
+                        SizedBox(height: 11,),
+                        ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           padding: EdgeInsets.zero,
